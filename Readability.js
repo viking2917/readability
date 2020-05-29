@@ -116,11 +116,11 @@ Readability.prototype = {
   REGEXPS: {
     // NOTE: These two regular expressions are duplicated in
     // Readability-readerable.js. Please keep both copies in sync.
-    unlikelyCandidates: /-ad-|ai2html|banner|breadcrumbs|combx|comment|community|cover-wrap|disqus|extra|footer|gdpr|header|legends|menu|related|remark|replies|rss|shoutbox|sidebar|skyscraper|social|sponsor|supplemental|ad-break|agegate|pagination|pager|popup|yom-remote/i,
+    unlikelyCandidates: /-ad-|ai2html|banner|breadcrumbs|combx|comment|community|cover-wrap|disqus|extra|footer|gdpr|qc-cmp-ui-container|onetrust-consent-sdk|header|legends|menu|related|remark|replies|rss|shoutbox|sidebar|skyscraper|social|sponsor|supplemental|ad-break|agegate|pagination|pager|popup|yom-remote/i,
     okMaybeItsACandidate: /and|article|body|column|content|main|shadow/i,
 
     positive: /article|body|content|entry|hentry|h-entry|main|page|pagination|post|text|blog|story/i,
-    negative: /hidden|^hid$| hid$| hid |^hid |banner|combx|comment|com-|contact|foot|footer|footnote|gdpr|masthead|media|meta|outbrain|promo|related|scroll|share|shoutbox|sidebar|skyscraper|sponsor|shopping|tags|tool|widget/i,
+    negative: /hidden|^hid$| hid$| hid |^hid |banner|combx|comment|com-|contact|foot|footer|footnote|gdpr|qc-cmp-ui-container|onetrust-consent-sdk|masthead|media|meta|outbrain|promo|related|scroll|share|shoutbox|sidebar|skyscraper|sponsor|shopping|tags|tool|widget/i,
     extraneous: /print|archive|comment|discuss|e[\-]?mail|share|reply|all|login|sign|single|utility/i,
     byline: /byline|author|dateline|writtenby|p-author/i,
     replaceFonts: /<(\/?)font[^>]*>/gi,
@@ -1300,10 +1300,10 @@ Readability.prototype = {
     var metaElements = this._doc.getElementsByTagName("meta");
 
     // property is a space-separated list of values
-    var propertyPattern = /\s*(dc|dcterm|og|twitter)\s*:\s*(author|creator|description|title|site_name)\s*/gi;
+    var propertyPattern = /\s*(dc|dcterm|og|twitter)\s*:\s*(author|creator|description|title|site_name|image|image:src)\s*/gi;
 
     // name is a single value
-    var namePattern = /^\s*(?:(dc|dcterm|og|twitter|weibo:(article|webpage))\s*[\.:]\s*)?(author|creator|description|title|site_name)\s*$/i;
+    var namePattern = /^\s*(?:(dc|dcterm|og|twitter|weibo:(article|webpage))\s*[\.:]\s*)?(author|creator|description|title|site_name|image|image:src)\s*$/i;
 
     // Find description tags.
     this._forEachNode(metaElements, function(element) {
@@ -1368,6 +1368,10 @@ Readability.prototype = {
 
     // get site name
     metadata.siteName = values["og:site_name"];
+
+    metadata.image = values["og:image"] ||
+                     values["twitter:image"] ||
+                     values["twitter:image:src"];
 
     // in many sites the meta value is escaped with HTML entities,
     // so here we need to unescape it
@@ -2061,7 +2065,8 @@ Readability.prototype = {
       textContent: textContent,
       length: textContent.length,
       excerpt: metadata.excerpt,
-      siteName: metadata.siteName || this._articleSiteName
+      siteName: metadata.siteName || this._articleSiteName,
+      image: (metadata.image ? metadata.image : false)
     };
   }
 };
