@@ -2,6 +2,9 @@
 
 A standalone version of the readability library used for Firefox Reader View.
 
+*viking2917 mods include additional negative filtering for certain cookie/gdpr windows, so they do not become the readable content, and
+the return of the page's meta properties, and image data, for use by clients.*
+
 ## Usage on the web.
 
 To parse a document, you must create a new `Readability` object from a DOM document object, and then call `parse()`. Here's an example:
